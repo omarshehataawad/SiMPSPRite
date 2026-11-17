@@ -3,10 +3,12 @@
 *(This is a copy of the comment at the top of SimpSprite.hpp)*
 
 SimpSprite is a simple (its only selling point) 2D sprite rendering library
-for OpenGL 3.3+ It does not do much, but it provides basically every feature
+for OpenGL 3.3+. It does not do much, but it provides basically every feature
 needed to implement basic sprite functionality. It requires a functional 
-OpenGL 3.3+ context with GLFW and GLAD initialized,it also requires stbi and glm.
-Working versions of all the dependancies are bundled for quick deployment.
+OpenGL 3.3+ context with GLFW and GLAD initialized, it also requires stbi and glm.
+Working versions of all the dependencies are bundled for quick deployment.
+Also bundled are simple vertex and fragment shaders to be used with the library. 
+For guidelines on custom shaders see the Shaders section below.
 
 ## DOCUMENTATION:
 
@@ -20,14 +22,14 @@ Sprite is a class representing one sprite (as suggested by the name).
 
 1. **x,y,w,h,angle:** True X position, True Y position, width, height, angle.
 
-2. **draw_x, draw_y, draw_h:** Displayed x Position, displayed y position, displayed h position
+2. **draw_x, draw_y, draw_a:** Displayed x Position, displayed y position, displayed h position
 
 3. **speed:** speed at which draw_x and draw_y approach x and y, if the sprite is animated.
 
 4. **active:** sprite is only rendered while active.
 
 5. **animated:** the animation system functions by slowly incrementing/decrementing draw_x,
-draw_y, and draw_a to approach x, y, and angle starting when of these parameters is set to a new value.
+draw_y, and draw_a to approach x, y, and angle starting when any of these parameters is set to a new value.
 This only takes place when animated,non animated sprites snap to the new location.
 
 6. **layer:** The library uses a form of the painter's algorithm. Sprites with a higher layer value appear on top. 
@@ -81,7 +83,7 @@ get and set layer count, which is the highest possible layer.
 get and set active screen, which is the screen whose contents get rendered in the show() call.
 
 ###### add_screen, remove_screen:
-allows adding and removing screen, takes the desired screen ID. Adding will decline if the screen ID is already taken.
+allows adding and removing screens, takes the desired screen ID. Adding will decline if the screen ID is already taken.
 Removal will remove the screen with the given ID and set the current screen to 0.
 
 ###### init_gl:
@@ -90,3 +92,26 @@ window with those parameters, otherwise creates a 1600x900 window titled "SimpSp
 
 ###### shutdown:
 deletes all OpenGL objects, to be called directly before OpenGL context termination (if needed).
+
+## Shaders:
+
+The library is bundled with a set of shaders that are designed to work with
+it, however, it supports the use of custom shaders, with some requirements:
+
+- Target GLSL #version 330 core or higher.
+- Uniforms are set by name, so the names below must match exactly:
+
+Vertex shader:
+    - Input: layout(location = 0) in vec2 aCorner; (unit quad corners, the
+      only attribute)
+    - Uniforms: mat4 uProj (pixel-space projection, origin top left),
+      mat4 uModel (per-sprite transform).
+    - Output position must be: uProj * uModel * vec4(aCorner, 0.0, 1.0)
+    - Use aCorner as the UV (images are not flipped on load). Anything else
+      passed to the fragment shader is up to you.
+
+Fragment shader:
+    - Uniforms: sampler2D uTex (sprite texture, unit 0), vec4 uTint
+      (multiply into the final color).
+    - Must output a single RGBA vec4. Alpha blending is on, so output alpha
+      controls transparency.
