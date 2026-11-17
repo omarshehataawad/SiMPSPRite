@@ -8,6 +8,33 @@ for OpenGL 3.3+ It does not do much, but it provides basically every feature
 needed to implement basic sprite functionality. It requires a functional 
 OpenGL 3.3+ context with GLFW and GLAD initialized,it also requires stbi and glm. Working versions of all the dependancies are bundled for quick deployment.
 
+DOCUMENTATION:
+
+TYPES:
+
+Sprite:
+
+Sprite is a class representing one sprite (as suggested by the name). 
+
+Attributes:
+
+1. x,y,w,h,angle: True X position, True Y position, width, height, angle.
+
+2. draw_x, draw_y, draw_h: Displayed x Position, displayed y position, displayed h position
+
+3. speed: speed at which draw_x and draw_y approach x and y, if the sprite is animated.
+
+4. active: sprite is only rendered while active.
+
+5. animated: the animation system functions by slowly incrementing/decrementing draw_x, draw_y, and draw_a to approach x, y, and angle starting when of these parameters is set to a new value. This only takes place when animated, non animated sprites snap to the new location.
+
+6. layer: The library uses a form of the painter's algorithm. Sprites with a higher layer value appear on top. 
+
+7.texture: the OpenGL texture for the sprite, loaded from a .png file
+
+8. tint: a vector represented as {r,g,b,a} which is multiplied to the sprite's values, {1,1,1,1} is no tint.
+
+
 =======================================================================*/
 
 #include <glad/gl.h>
