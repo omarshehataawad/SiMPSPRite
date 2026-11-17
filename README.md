@@ -101,7 +101,7 @@ it, however, it supports the use of custom shaders, with some requirements:
 - Target GLSL #version 330 core or higher.
 - Uniforms are set by name, so the names below must match exactly:
 
-Vertex shader:
+1. Vertex shader:
     - Input: layout(location = 0) in vec2 aCorner; (unit quad corners, the
       only attribute)
     - Uniforms: mat4 uProj (pixel-space projection, origin top left),
@@ -110,7 +110,7 @@ Vertex shader:
     - Use aCorner as the UV (images are not flipped on load). Anything else
       passed to the fragment shader is up to you.
 
-Fragment shader:
+2. Fragment shader:
     - Uniforms: sampler2D uTex (sprite texture, unit 0), vec4 uTint
       (multiply into the final color).
     - Must output a single RGBA vec4. Alpha blending is on, so output alpha
