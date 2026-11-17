@@ -86,6 +86,7 @@ takes a sprite and an integer representing screen ID and inserts the sprite into
 If this reference is lost it can be refetched using get_sprite(sprite_id)
 
 As such, the correct way to initialize a sprite is, for example:
+
 `Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);`
 
 
