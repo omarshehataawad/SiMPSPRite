@@ -1,6 +1,6 @@
 # SiMPSPRite
 
-*(This is a copy of the comment at the top of SimpSprite.hpp)*
+*(This is a copy of the comment at the top of simpsprite.hpp)*
 
 SiMPSPRite is a simple (its only selling point) 2D sprite rendering library
 for OpenGL 3.3+. It does not do much, but it provides basically every feature
