@@ -54,6 +54,7 @@ takes a file path to a .png image. creates a texture from the image and sets the
 ##### CORRECT WAY TO INITIALIZE A SPRITE:
 
 `Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);`
+
 see sprite_to_screen below.
 
 #### Screen: 
