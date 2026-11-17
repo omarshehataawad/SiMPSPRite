@@ -38,11 +38,14 @@ This only takes place when animated,non animated sprites snap to the new locatio
 
 ###### METHODS:
 
-animate: Internal, runs the animation algorithm described above.
+###### animate:
+Internal, runs the animation algorithm described above.
 
-tint_sprite: takes a vector, sets the tint value
+###### tint_sprite:
+takes a vector, sets the tint value
 
-change_tex: takes a file path to a .png image. creates a texture from the image and sets the Sprite's texture field to it.
+###### change_tex: 
+takes a file path to a .png image. creates a texture from the image and sets the Sprite's texture field to it.
 
 #### Screen: 
 
