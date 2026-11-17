@@ -36,7 +36,7 @@ This only takes place when animated,non animated sprites snap to the new locatio
 
 8. tint: a vector represented as {r,g,b,a} which is multiplied to the sprite's values, {1,1,1,1} is no tint.
 
-###### METHODS:
+##### METHODS:
 
 ###### animate:
 Internal, runs the animation algorithm described above.
