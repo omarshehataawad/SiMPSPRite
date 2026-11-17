@@ -76,6 +76,8 @@ based on their layer and position. Must be called in the render loop AFTER begin
 
 ###### sprite_to_screen: 
 takes a sprite and an integer representing screen ID and inserts the sprite into the screen corresponding to the ID.
+This is a COPY. The sprite must be modified using get_sprite(id).attribute, the original sprite is separate from the one actually in the list.
+    *-MAYBE PLANNED: switch from this model to shared pointers.*
 
 ###### get_sprite/remove_sprite: 
 takes a sprite_id and a screen and retrieves/removes the desired sprite.

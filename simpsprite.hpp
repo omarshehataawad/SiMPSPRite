@@ -85,7 +85,11 @@ show:
 
 sprite_to_screen:
     takes a sprite and an integer representing screen ID and inserts the
-    sprite into the screen corresponding to the ID.
+    sprite into the screen corresponding to the ID. This is a COPY. 
+    the sprite must be modified using get_sprite(id).attribute, the 
+    original sprite is separate from the one actually in the list.
+
+    -MAYBE PLANNED: switch from this model to shared pointers.
 
 get_sprite/remove_sprite: 
     takes a sprite_id and a screen and retrieves/removes the desired sprite.
@@ -158,6 +162,7 @@ Fragment shader:
     #include <iostream>
     #include <unordered_map>
     #include <cmath>
+    #include <stdexcept>
     #include <glm/gtc/matrix_transform.hpp>
     #include <glm/gtc/type_ptr.hpp>
 #endif
@@ -224,7 +229,7 @@ void set_active_screen(int X);
 void add_screen(int id);
 void remove_screen(int id);
 
-GLFWwindow* init_gl(int x, int y, std::string window_name);
+GLFWwindow* init_gl(int x = 1600, int y = 900, std::string window_name = "SimpSprite Window");
 
 void shutdown();
 
@@ -465,6 +470,7 @@ Sprite& get_sprite(int screen_id, int sprite_id)
             if (spr.sprite_id == sprite_id) return spr;
         break;
     }
+    throw std::out_of_range("smpspr::get_sprite: no such sprite");
 }
 
 void remove_sprite(int screen_id, int sprite_id)
@@ -526,7 +532,7 @@ void remove_screen(int id)
     }
 }
 
-GLFWwindow* init_gl(int x = 1600, int y = 900, std::string window_name = "SimpSprite Window")
+GLFWwindow* init_gl(int x, int y, std::string window_name)
 {
     if (!glfwInit()) {
         std::cerr << "Failed to init GLFW\n";
@@ -552,6 +558,7 @@ GLFWwindow* init_gl(int x = 1600, int y = 900, std::string window_name = "SimpSp
     }
 
     glViewport(0, 0, x, y);
+    return window;
 }
 
 void shutdown()
