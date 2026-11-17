@@ -35,6 +35,25 @@ Attributes:
 8. tint: a vector represented as {r,g,b,a} which is multiplied to the sprite's values, {1,1,1,1} is no tint.
 
 
+METHODS:
+
+animate: Internal, runs the animation algorithm described above.
+
+tint_sprite: takes a vector, sets the tint value
+
+change_tex: takes a file path to a .png image. creates a texture from the image and sets the Sprite's texture field to it.
+
+Screen:
+
+contains a list of sprites as well as an ID it can be referenced with.
+
+MAIN FUNCTIONS:
+
+load_shader_program: takes two file paths, path to the vertex shader and path to the fragment shader. creates a shader program and loads it.
+
+-PLANNED: Integrating prebuilt shaders into the library.
+
+
 =======================================================================*/
 
 #include <glad/gl.h>
