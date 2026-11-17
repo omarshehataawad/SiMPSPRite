@@ -53,7 +53,7 @@ takes a file path to a .png image. creates a texture from the image and sets the
 
 ##### CORRECT WAY TO INITIALIZE A SPRITE:
 
-`Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);`
+`Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);`
 
 see sprite_to_screen below.
 
@@ -87,7 +87,7 @@ If this reference is lost it can be refetched using get_sprite(sprite_id)
 
 As such, the correct way to initialize a sprite is, for example:
 
-`Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);`
+`Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);`
 
 
 ###### get_sprite/remove_sprite: 
