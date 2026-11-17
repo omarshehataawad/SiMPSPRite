@@ -107,7 +107,9 @@ Removal will remove the screen with the given ID and set the current screen to 0
 **FOR BEGINNERS.** Optionally takes a window width, height, and name, and initializes an OpenGL
 window with those parameters, otherwise creates a 1600x900 window titled "SimpSprite Window".
 Called as such:
+    
     GLFWwindow* window = smpspr::init_gl(x,y,name); 
+    
     And at the end of the render loop:
 
     glfwSwapBuffers(window);
