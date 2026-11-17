@@ -1,9 +1,9 @@
 #pragma once
 
 /*=======================================================================
--------------------------------SIMPSPRITE--------------------------------
+-------------------------------SiMPSPRite--------------------------------
 
-SimpSprite is a simple (its only selling point) 2D sprite rendering library
+SiMPSPRite is a simple (its only selling point) 2D sprite rendering library
 for OpenGL 3.3+. It does not do much, but it provides basically every feature
 needed to implement basic sprite functionality. It requires a functional
 OpenGL 3.3+ context with GLFW and GLAD initialized, it also requires stbi and
@@ -23,30 +23,31 @@ Sprite:
     Sprite is a class representing one sprite (as suggested by the name).
 
     Attributes:
+    1. sprite_id: id with which the sprite can be accessed after it is stored
 
-    1. x, y, w, h, angle: True X position, True Y position, width, height,
+    2. x, y, w, h, angle: True X position, True Y position, width, height,
        angle.
 
-    2. draw_x, draw_y, draw_a: Displayed x Position, displayed y position,
+    3. draw_x, draw_y, draw_a: Displayed x Position, displayed y position,
        displayed h position
 
-    3. speed: speed at which draw_x and draw_y approach x and y, if the
+    4. speed: speed at which draw_x and draw_y approach x and y, if the
        sprite is animated.
 
-    4. active: sprite is only rendered while active.
+    5. active: sprite is only rendered while active.
 
-    5. animated: the animation system functions by slowly
+    6. animated: the animation system functions by slowly
        incrementing/decrementing draw_x, draw_y, and draw_a to approach x, y,
        and angle starting when any of these parameters is set to a new value.
        This only takes place when animated, non animated sprites snap to the
        new location.
 
-    6. layer: The library uses a form of the painter's algorithm. Sprites
+    7. layer: The library uses a form of the painter's algorithm. Sprites
        with a higher layer value appear on top.
 
-    7. texture: the OpenGL texture for the sprite, loaded from a .png file
+    8. texture: the OpenGL texture for the sprite, loaded from a .png file
 
-    8. tint: a vector represented as {r,g,b,a} which is multiplied to the
+    9. tint: a vector represented as {r,g,b,a} which is multiplied to the
        sprite's values, {1,1,1,1} is no tint.
 
     Methods:
@@ -86,6 +87,9 @@ sprite_to_screen:
     takes a sprite and an integer representing screen ID and inserts the
     sprite into the screen corresponding to the ID.
 
+get_sprite/remove_sprite: 
+    takes a sprite_id and a screen and retrieves/removes the desired sprite.
+
 get_layer_count, set_layer_count:
     get and set layer count, which is the highest possible layer + 1.
 
@@ -101,7 +105,12 @@ add_screen, remove_screen:
 init_gl:
     FOR BEGINNERS. Optionally takes a window width, height, and name, and
     initializes an OpenGL window with those parameters, otherwise creates a
-    1600x900 window titled "SimpSprite Window".
+    1600x900 window titled "SimpSprite Window". Called as such:
+    GLFWwindow* window = smpspr::init_gl(x,y,name); 
+    And at the end of the render loop:
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
 
 shutdown():
     deletes all OpenGL objects, to be called directly before OpenGL context
@@ -161,6 +170,7 @@ namespace smpspr{
 class Sprite
 {
     public:
+        int sprite_id;
         float x,y,w,h;
         float draw_x, draw_y, draw_a;
         float speed;
@@ -171,7 +181,7 @@ class Sprite
         unsigned int texture;
         glm::vec4 tint = {1,1,1,1};
 
-    Sprite(float x = 0, float y = 0, float w = 0, float h = 0, int layer = 0,
+    Sprite(int id = 0, float x = 0, float y = 0, float w = 0, float h = 0, int layer = 0,
         const std::string& texture = "", bool anim = false, float angle = 0.0f);
 
     void animate(float dt);
@@ -202,6 +212,9 @@ void show();
 
 void sprite_to_screen(Sprite& spr, int id);
 
+Sprite& get_sprite(int screen_id, int sprite_id);
+void remove_sprite(int screen_id, int sprite_id);
+
 int get_layer_count();
 void set_layer_count(int x);
 
@@ -211,7 +224,7 @@ void set_active_screen(int X);
 void add_screen(int id);
 void remove_screen(int id);
 
-void init_gl(int x, int y, std::string window_name);
+GLFWwindow* init_gl(int x, int y, std::string window_name);
 
 void shutdown();
 
@@ -444,6 +457,30 @@ void sprite_to_screen(Sprite& spr, int id)
     }
 }
 
+Sprite& get_sprite(int screen_id, int sprite_id)
+{
+    for (Screen& s : screens) {
+        if (s.screen_id != screen_id) continue;
+        for (Sprite& spr : s.sprites)
+            if (spr.sprite_id == sprite_id) return spr;
+        break;
+    }
+}
+
+void remove_sprite(int screen_id, int sprite_id)
+{
+    for (Screen& s : screens) {
+        if (s.screen_id != screen_id) continue;
+        for (auto i = s.sprites.begin(); i != s.sprites.end(); ++i) {
+            if (i->sprite_id == sprite_id) {
+                s.sprites.erase(i);
+                return;
+            }
+        }
+        return;
+    }
+}
+
 int get_layer_count()
 {
     return layer_count;
@@ -489,29 +526,29 @@ void remove_screen(int id)
     }
 }
 
-void init_gl(int x = 1600, int y = 900, std::string window_name = "SimpSprite Window")
+GLFWwindow* init_gl(int x = 1600, int y = 900, std::string window_name = "SimpSprite Window")
 {
     if (!glfwInit()) {
         std::cerr << "Failed to init GLFW\n";
-        return;
+        return nullptr;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
     GLFWwindow* window = glfwCreateWindow(x, y, window_name.c_str(), nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create window\n";
         glfwTerminate();
-        return;
+        return nullptr;
     }
     glfwMakeContextCurrent(window);
 
     int version = gladLoadGL(glfwGetProcAddress);
     if (version == 0) {
         printf("Failed to initialize OpenGL context\n");
-        return;
+        return nullptr;
     }
 
     glViewport(0, 0, x, y);
@@ -541,9 +578,9 @@ void shutdown()
 // CLASS IMPLEMENTATIONS
 //============================================================
 
-Sprite::Sprite(float x, float y, float w, float h, int layer,
+Sprite::Sprite(int id, float x, float y, float w, float h, int layer,
      const std::string& texture, bool anim, float angle)
-    : x(x), y(y), w(w), h(h), angle(angle), draw_x(x), draw_y(y), draw_a(angle), speed(200),
+    : sprite_id(id), x(x), y(y), w(w), h(h), angle(angle), draw_x(x), draw_y(y), draw_a(angle), speed(200),
     active(true), animated(anim), layer(layer), texture(texture.empty() ? 0 : get_texture(texture)) {}
 
 void Sprite::animate(float dt){

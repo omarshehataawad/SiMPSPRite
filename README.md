@@ -19,24 +19,25 @@ For guidelines on custom shaders see the Shaders section below.
 Sprite is a class representing one sprite (as suggested by the name). 
 
 ##### Attributes:
+1. **sprite_id:** id with which the sprite can be accessed after it is stored 
 
-1. **x,y,w,h,angle:** True X position, True Y position, width, height, angle.
+2. **x,y,w,h,angle:** True X position, True Y position, width, height, angle.
 
-2. **draw_x, draw_y, draw_a:** Displayed x Position, displayed y position, displayed h position
+3. **draw_x, draw_y, draw_a:** Displayed x Position, displayed y position, displayed h position
 
-3. **speed:** speed at which draw_x and draw_y approach x and y, if the sprite is animated.
+4. **speed:** speed at which draw_x and draw_y approach x and y, if the sprite is animated.
 
-4. **active:** sprite is only rendered while active.
+5. **active:** sprite is only rendered while active.
 
-5. **animated:** the animation system functions by slowly incrementing/decrementing draw_x,
+6. **animated:** the animation system functions by slowly incrementing/decrementing draw_x,
 draw_y, and draw_a to approach x, y, and angle starting when any of these parameters is set to a new value.
 This only takes place when animated,non animated sprites snap to the new location.
 
-6. **layer:** The library uses a form of the painter's algorithm. Sprites with a higher layer value appear on top. 
+7. **layer:** The library uses a form of the painter's algorithm. Sprites with a higher layer value appear on top. 
 
-7. **texture:** the OpenGL texture for the sprite, loaded from a .png file
+8. **texture:** the OpenGL texture for the sprite, loaded from a .png file
 
-8. **tint:** a vector represented as {r,g,b,a} which is multiplied to the sprite's values, {1,1,1,1} is no tint.
+9. **tint:** a vector represented as {r,g,b,a} which is multiplied to the sprite's values, {1,1,1,1} is no tint.
 
 ##### METHODS:
 
@@ -76,6 +77,9 @@ based on their layer and position. Must be called in the render loop AFTER begin
 ###### sprite_to_screen: 
 takes a sprite and an integer representing screen ID and inserts the sprite into the screen corresponding to the ID.
 
+###### get_sprite/remove_sprite: 
+takes a sprite_id and a screen and retrieves/removes the desired sprite.
+
 ###### get_layer_count, set_layer_count:
 get and set layer count, which is the highest possible layer.
 
@@ -89,6 +93,12 @@ Removal will remove the screen with the given ID and set the current screen to 0
 ###### init_gl:
 **FOR BEGINNERS.** Optionally takes a window width, height, and name, and initializes an OpenGL
 window with those parameters, otherwise creates a 1600x900 window titled "SimpSprite Window".
+Called as such:
+    GLFWwindow* window = smpspr::init_gl(x,y,name); 
+    And at the end of the render loop:
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
 
 ###### shutdown:
 deletes all OpenGL objects, to be called directly before OpenGL context termination (if needed).
