@@ -59,6 +59,13 @@ Sprite:
     change_tex:   takes a file path to a .png image. creates a texture from
                   the image and sets the Sprite's texture field to it.
 
+
+    CORRECT WAY TO INITIALIZE A SPRITE:
+
+    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);
+
+    see sprite_to_screen below.
+    
 Screen:
     contains a list of sprites as well as an ID it can be referenced with.
 
@@ -85,11 +92,12 @@ show:
 
 sprite_to_screen:
     takes a sprite and an integer representing screen ID and inserts the
-    sprite into the screen corresponding to the ID. This is a COPY. 
-    the sprite must be modified using get_sprite(id).attribute, the 
-    original sprite is separate from the one actually in the list.
+    sprite into the screen corresponding to the ID. Returns a reference to the
+    sprite in the screen. If this reference is lost it can be refetched using 
+    get_sprite(sprite_id). 
 
-    -MAYBE PLANNED: switch from this model to shared pointers.
+    As such, the correct way to initialize a sprite is, for example:
+    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);
 
 get_sprite/remove_sprite: 
     takes a sprite_id and a screen and retrieves/removes the desired sprite.
@@ -215,7 +223,7 @@ void begin_frame(GLuint shader, float screen_w, float screen_h);
 
 void show();
 
-void sprite_to_screen(Sprite& spr, int id);
+Sprite& sprite_to_screen(Sprite& spr, int id);
 
 Sprite& get_sprite(int screen_id, int sprite_id);
 void remove_sprite(int screen_id, int sprite_id);
@@ -450,16 +458,16 @@ void show()
     }
 }
 
-void sprite_to_screen(Sprite& spr, int id)
+Sprite& sprite_to_screen(Sprite& spr, int id)
 {
     for (Screen& s : screens)
     {
         if (s.screen_id == id)
         {
-            s.sprites.emplace_back(spr);
-            return;
+            return s.sprites.emplace_back(spr);
         }
     }
+    throw std::runtime_error("sprite_to_screen: no screen with id " + std::to_string(id));
 }
 
 Sprite& get_sprite(int screen_id, int sprite_id)
