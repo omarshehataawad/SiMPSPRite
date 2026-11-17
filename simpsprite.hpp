@@ -62,7 +62,7 @@ Sprite:
 
     CORRECT WAY TO INITIALIZE A SPRITE:
 
-    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);
+    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);
 
     see sprite_to_screen below.
     
@@ -97,7 +97,7 @@ sprite_to_screen:
     get_sprite(sprite_id). 
 
     As such, the correct way to initialize a sprite is, for example:
-    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "player.png", true), 0);
+    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);
 
 get_sprite/remove_sprite: 
     takes a sprite_id and a screen and retrieves/removes the desired sprite.
