@@ -223,7 +223,7 @@ void begin_frame(GLuint shader, float screen_w, float screen_h);
 
 void show();
 
-Sprite& sprite_to_screen(Sprite& spr, int id);
+Sprite& sprite_to_screen(const Sprite& spr, int id);
 
 Sprite& get_sprite(int screen_id, int sprite_id);
 void remove_sprite(int screen_id, int sprite_id);
@@ -252,7 +252,7 @@ void shutdown();
 //============================================================
 static std::vector<Screen> screens;
 static int active_screen_id=0;
-static int layer_count=0;
+static int layer_count=1;
 
 static GLuint quad_vao = 0;
 static GLuint quad_vbo = 0;
@@ -458,7 +458,7 @@ void show()
     }
 }
 
-Sprite& sprite_to_screen(Sprite& spr, int id)
+Sprite& sprite_to_screen(const Sprite& spr, int id)
 {
     for (Screen& s : screens)
     {
