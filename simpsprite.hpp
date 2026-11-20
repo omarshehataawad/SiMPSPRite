@@ -42,7 +42,7 @@ Sprite:
        angle.
 
     3. draw_x, draw_y, draw_a: Displayed x Position, displayed y position,
-       displayed h position
+       displayed angle
 
     4. speed: speed at which draw_x and draw_y approach x and y, if the
        sprite is animated.
@@ -72,12 +72,11 @@ Sprite:
     change_tex:   takes a file path to a .png image. creates a texture from
                   the image and sets the Sprite's texture field to it.
 
-
     CORRECT WAY TO INITIALIZE A SPRITE:
 
-    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);
+    Sprite& sprite = attach_sprite(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);
 
-    see sprite_to_screen below.
+    see attach_sprite below.
     
 Screen:
     contains a list of sprites as well as an ID it can be referenced with.
@@ -90,42 +89,64 @@ load_shader_program:
     takes two file paths, path to the vertex shader and path to the fragment
     shader. creates a shader program and loads it.
 
+    eg: smpspr::load_shader_program("vertex_shader_path", "fragment_shader_path");
+
 init_quad:
     initializes the quadrilateral that is transformed into the various
     sprites. To be called once before the render loop runs.
 
+    eg: in main, after initializing viewport: smpspr::init_quad();
+
 begin_frame:
     set up the projection to allow pixel based coordinates. to be called in
     the render loop before show() or any other SimpSprite function is called.
+
+    eg: in render loop, after clearing color: smpspr::begin_frame(width, height, window);
 
 show:
     The main rendering function, iterates over all the sprites in the active
     screen and renders them based on their layer and position. Must be called
     in the render loop AFTER begin_frame().
 
-sprite_to_screen:
+    eg: in render loop, after begin_frame(): smpspr::show();
+
+attach_sprite:
     takes a sprite and an integer representing screen ID and inserts the
     sprite into the screen corresponding to the ID. Returns a reference to the
     sprite in the screen. If this reference is lost it can be refetched using 
-    get_sprite(sprite_id). 
+    get_sprite(sprite_id, screen_id). 
+
+    eg: smpspr::attach_sprite(sprite,screen);
 
     As such, the correct way to initialize a sprite is, for example:
-    Sprite& sprite = sprite_to_screen(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);
+    Sprite& sprite = smpspr::attach_sprite(Sprite(1, 100, 100, 32, 32, 0, "sprite.png", true), 0);
 
 get_sprite/remove_sprite: 
-    takes a sprite_id and a screen and retrieves/removes the desired sprite.
+    takes a sprite_id and a screen id and retrieves/removes the desired sprite.
+
+    eg: smpspr::get_sprite(sprite_id, screen_id);
+        smpspr::remove_sprite(sprite_id, screen_id);
 
 get_layer_count, set_layer_count:
-    get and set layer count, which is the highest possible layer + 1.
+    get and set layer count for a screen, which is the highest possible layer + 1.
+
+    eg: smpspr::get_layer_count(screen_id);
+        smpspr::set_layer_count(screen_id, desired_no_of_layers);
 
 get_active_screen, set_active_screen:
     get and set active screen, which is the screen whose contents get
     rendered in the show() call.
 
+    eg: get_active_screen();
+        set_active_screen(screen_id);
+
 add_screen, remove_screen:
     allows adding and removing screens, takes the desired screen ID. Adding
     will decline if the screen ID is already taken. Removal will remove the
     screen with the given ID and set the current screen to 0.
+
+    eg: add_screen(screen_id);
+        remove_screen(screen_id);
 
 init_gl:
     FOR BEGINNERS. Optionally takes a window width, height, and name, and
@@ -173,6 +194,7 @@ Fragment shader:
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+#include <deque>
 
 #ifdef SIMPSPRITE_IMPLEMENTATION
     #define STB_IMAGE_IMPLEMENTATION
@@ -221,7 +243,8 @@ class Sprite
 
 struct Screen {
     int screen_id;
-    std::vector<Sprite> sprites;
+    int layer_count = 1;
+    std::deque<Sprite> sprites;
 };
 
 //============================================================
@@ -236,13 +259,13 @@ void begin_frame(GLuint shader, float screen_w, float screen_h);
 
 void show();
 
-Sprite& sprite_to_screen(const Sprite& spr, int id);
+Sprite& attach_sprite(const Sprite& spr, int id);
 
-Sprite& get_sprite(int screen_id, int sprite_id);
-void remove_sprite(int screen_id, int sprite_id);
+Sprite& get_sprite(int sprite_id, int screen_id);
+void remove_sprite(int sprite_id, int screen_id);
 
-int get_layer_count();
-void set_layer_count(int x);
+int get_layer_count(int screen_id);
+void set_layer_count(int screen_id, int x);
 
 int get_active_screen();
 void set_active_screen(int X);
@@ -265,7 +288,6 @@ void shutdown();
 //============================================================
 static std::vector<Screen> screens;
 static int active_screen_id=0;
-static int layer_count=1;
 
 static GLuint quad_vao = 0;
 static GLuint quad_vbo = 0;
@@ -365,7 +387,7 @@ static void draw_sprite(GLuint tex, float x, float y, float w, float h, float an
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
-static void draw_helper(int layer, std::vector<Sprite>& sprites)
+static void draw_helper(int layer, std::deque<Sprite>& sprites)
 {
     for(const Sprite& sprite : sprites){
         if(sprite.layer == layer && sprite.active){
@@ -375,7 +397,7 @@ static void draw_helper(int layer, std::vector<Sprite>& sprites)
     }
 }
 
-static void draw(std::vector<Sprite>& sprites)
+static void draw(std::deque<Sprite>& sprites, int layer_count)
 {
     static double prev = glfwGetTime();
     double cur = glfwGetTime();
@@ -389,6 +411,13 @@ static void draw(std::vector<Sprite>& sprites)
     for(int i = 0; i<layer_count; i++){
         draw_helper(i,sprites);
     }
+}
+
+static Screen& get_screen(int screen_id)
+{
+    for (Screen& s : screens)
+        if (s.screen_id == screen_id) return s;
+    throw std::out_of_range("smpspr: no screen with id " + std::to_string(screen_id));
 }
 
 //============================================================
@@ -466,12 +495,12 @@ void show()
 {
     for(Screen &s : screens){
         if(s.screen_id == active_screen_id){
-            draw(s.sprites);
+            draw(s.sprites, s.layer_count);
         }
     }
 }
 
-Sprite& sprite_to_screen(const Sprite& spr, int id)
+Sprite& attach_sprite(const Sprite& spr, int id)
 {
     for (Screen& s : screens)
     {
@@ -480,10 +509,10 @@ Sprite& sprite_to_screen(const Sprite& spr, int id)
             return s.sprites.emplace_back(spr);
         }
     }
-    throw std::runtime_error("sprite_to_screen: no screen with id " + std::to_string(id));
+    throw std::runtime_error("attach_sprite: no screen with id " + std::to_string(id));
 }
 
-Sprite& get_sprite(int screen_id, int sprite_id)
+Sprite& get_sprite(int sprite_id, int screen_id)
 {
     for (Screen& s : screens) {
         if (s.screen_id != screen_id) continue;
@@ -494,7 +523,7 @@ Sprite& get_sprite(int screen_id, int sprite_id)
     throw std::out_of_range("smpspr::get_sprite: no such sprite");
 }
 
-void remove_sprite(int screen_id, int sprite_id)
+void remove_sprite(int sprite_id, int screen_id)
 {
     for (Screen& s : screens) {
         if (s.screen_id != screen_id) continue;
@@ -508,14 +537,14 @@ void remove_sprite(int screen_id, int sprite_id)
     }
 }
 
-int get_layer_count()
+int get_layer_count(int screen_id)
 {
-    return layer_count;
+    return get_screen(screen_id).layer_count;
 }
 
-void set_layer_count(int x)
+void set_layer_count(int screen_id, int x)
 {
-    layer_count = x;
+    get_screen(screen_id).layer_count = x;
 }
 
 int get_active_screen()
