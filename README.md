@@ -14,8 +14,8 @@ For guidelines on custom shaders see the Shaders section below.
 ## USAGE: 
 create a .cpp file containing:
 
-  #define SIMPSPRITE_IMPLEMENTATION
-  #include "simpsprite.hpp"
+    #define SIMPSPRITE_IMPLEMENTATION
+    #include "simpsprite.hpp"
 
 and nothing else
 
