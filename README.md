@@ -20,6 +20,7 @@ create a .cpp file containing:
 and nothing else
 
 In files using the library:
+
 `#include "simpsprite.hpp"`
 
 ## DOCUMENTATION:
