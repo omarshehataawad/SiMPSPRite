@@ -10,6 +10,18 @@ Working versions of all the dependencies are bundled for quick deployment.
 Also bundled are simple vertex and fragment shaders to be used with the library. 
 For guidelines on custom shaders see the Shaders section below.
 
+
+## USAGE: 
+create a .cpp file containing:
+
+  #define SIMPSPRITE_IMPLEMENTATION
+  #include "simpsprite.hpp"
+
+and nothing else
+
+In files using the library:
+`#include "simpsprite.hpp"`
+
 ## DOCUMENTATION:
 
 ### TYPES:
