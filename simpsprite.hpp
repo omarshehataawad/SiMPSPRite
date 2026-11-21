@@ -270,7 +270,7 @@ void set_layer_count(int screen_id, int x);
 int get_active_screen();
 void set_active_screen(int X);
 
-void add_screen(int id);
+void add_screen(int id, int layer_count = 1);
 void remove_screen(int id);
 
 GLFWwindow* init_gl(int x = 1600, int y = 900, std::string window_name = "SimpSprite Window");
@@ -557,7 +557,7 @@ void set_active_screen(int x)
     active_screen_id = x;
 }
 
-void add_screen(int id)
+void add_screen(int id, int layer_count)
 {
     for (const Screen& s : screens)
         if (s.screen_id == id){
@@ -566,7 +566,7 @@ void add_screen(int id)
         }
 
 
-    screens.emplace_back(Screen{id, {}});
+    screens.emplace_back(Screen{id,layer_count, {}});
 }
 
 void remove_screen(int id)
