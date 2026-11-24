@@ -396,15 +396,30 @@ static GLuint get_texture(const char* path){
 
     if (tex_count == tex_cap) {
         int ncap = tex_cap ? tex_cap * 2 : 8;
-        TexEntry* p = (TexEntry*)realloc(texture_cache, ncap * sizeof(TexEntry));
-        if (!p) return tex;
+        TexEntry* p = (TexEntry*)realloc(
+            texture_cache, ncap * sizeof(TexEntry)
+        );
+
+        if (!p) {
+            glDeleteTextures(1, &tex);
+            return 0;
+        }
+
         texture_cache = p;
         tex_cap = ncap;
     }
 
-    texture_cache[tex_count].path = strdup(path);
-    texture_cache[tex_count].tex  = tex;
-    tex_count++; 
+    char* copied_path = copy_str(path);
+
+    if (!copied_path) {
+        glDeleteTextures(1, &tex);
+        return 0;
+    }
+
+    texture_cache[tex_count].path = copied_path;
+    texture_cache[tex_count].tex = tex;
+    tex_count++;
+
     return tex;
 }
 
@@ -809,15 +824,38 @@ void smpspr_shutdown()
         quad_vao = 0;
     }
 
+    for (int i = 0; i < screen_count; i++) {
+        SpriteNode* current = screens[i].head;
+
+        while (current != NULL) {
+            SpriteNode* next = current->next;
+
+            free(current->sprite);
+            free(current);
+
+            current = next;
+        }
+    }
+
+    free(screens);
+    screens = NULL;
+    screen_count = 0;
+    screen_cap = 0;
+    active_screen_id = 0;
+
     for(int i = 0; i<tex_count; i++)
     {
+        glDeleteTextures(1, &texture_cache[i].tex);
         free(texture_cache[i].path);
     }
+
     free(texture_cache);
 
     texture_cache = NULL;
     tex_count = 0;
     tex_cap = 0;
+
+    current_shader = 0;
 }
 
 void smpspr_init_sprite(
