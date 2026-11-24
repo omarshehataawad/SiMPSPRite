@@ -884,9 +884,7 @@ void smpspr_init_sprite(
     s->animated = anim;
     s->layer = layer;
 
-    s->texture = (texture == NULL || texture[0] == '\0')
-        ? 0
-        : get_texture(texture);
+    s->texture = (texture == NULL || texture[0] == '\0')? 0: get_texture(texture);
 
     for (int i = 0; i < 4; i++)
         s->tint[i] = 1.0f;
@@ -900,9 +898,7 @@ void smpspr_tint_sprite(Sprite* s, const float tint[4])
 
 void smpspr_change_tex(Sprite* s, const char* new_tex)
 {
-    s->texture = (new_tex == NULL || new_tex[0] == '\0')
-        ? 0
-        : get_texture(new_tex);
+    s->texture = (new_tex == NULL || new_tex[0] == '\0')? 0: get_texture(new_tex);
 }
 #endif
 
